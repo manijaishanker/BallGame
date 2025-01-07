@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -624,7 +624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ballPlayerActionMap: {fileID: -944628639613478452, guid: 511a5ac1a83d8784a9e09da2df17a384, type: 3}
-  _ballMaxSpeed: 5
+  _ballMaxSpeed: 10
   _ballAccelerationRate: 2
   _ballJumpForce: 1
   _smoothInputSpeed: 0.2

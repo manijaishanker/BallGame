@@ -51,6 +51,8 @@ public class BallPlayerMovementHandler : MonoBehaviour
     private float _ballMaxJumpHeight = 1f;
     private float _ballJumpStartPos; // Variable is used to store the initial Y pos when the ball is jumped
 
+    private float _ballAcceleration;
+
     // Input Smooth Damp Variables
     private Vector3 _currentInputVector;
     private Vector3 _smoothInputVelocity;
@@ -94,24 +96,23 @@ public class BallPlayerMovementHandler : MonoBehaviour
             _ballCurrentSpeed = 0f;
             _ballPlayerState = EBallPlayerState.Idle;
         }
+        else
+        {
+            _currentInputVector = Vector3.SmoothDamp(_currentInputVector, ballMovementInputDirection, ref _smoothInputVelocity, _smoothInputSpeed);
 
-        _currentInputVector = Vector3.SmoothDamp(_currentInputVector, ballMovementInputDirection, ref _smoothInputVelocity, _smoothInputSpeed);
+            Vector3 ballMovementDirection = new Vector3(_currentInputVector.x, 0f, _currentInputVector.y);
 
-        Vector3 ballMovementDirection = new Vector3(_currentInputVector.x, 0f, _currentInputVector.y);
+            float prevSpeed = _ballCurrentSpeed;
+            _ballCurrentSpeed += _ballAccelerationRate * Time.deltaTime;
+            _ballCurrentSpeed = Mathf.Clamp(_ballCurrentSpeed, 0f, _ballMaxSpeed);
 
-        _ballCurrentSpeed += _ballAccelerationRate * Time.deltaTime;
-        _ballCurrentSpeed = Mathf.Clamp(_ballCurrentSpeed, 0f, _ballMaxSpeed);
+            _ballAcceleration = (_ballCurrentSpeed - prevSpeed) / Time.deltaTime;
 
-        Debug.Log("!!!!!!11 CURRENT SPEED: " + _ballCurrentSpeed);
-
-        _ballMovementVelocity = ballMovementDirection.normalized * _ballCurrentSpeed;
-        Debug.Log("!!!!!!11 CURRENT VELOCITY: " + _ballMovementVelocity);
-
-        //float acceleration = _ballAccelerationRate * Time.deltaTime;
-        _ballMovementVelocity = Vector3.ClampMagnitude(_ballMovementVelocity, _ballMaxSpeed);
-
-        //Debug.Log("!!!!1 HANDLE JUMPING: ISGROUNDED: " + IsGrounded() + " BallPlayerState: " + BallPlayerState);
-
+            _ballMovementVelocity = ballMovementDirection.normalized * _ballCurrentSpeed;
+            _ballMovementVelocity = Vector3.ClampMagnitude(_ballMovementVelocity, _ballMaxSpeed);
+            _ballPlayerState = EBallPlayerState.Moving;
+        }
+        //Debug.Log("_ballMovementVelocity: " + _ballMovementVelocity);
     }
 
     private void HandleJumping(InputAction.CallbackContext callbackContext)
@@ -125,11 +126,9 @@ public class BallPlayerMovementHandler : MonoBehaviour
 
     private void AddMovementForce()
     {
-        //if (_ballRigidBody.velocity.sqrMagnitude < _ballMaxSpeed * _ballMaxSpeed)
-        //{
-        _ballRigidBody.velocity = _ballMovementVelocity;//.AddForce(_ballMovementVelocity, ForceMode.Impulse);
-            _ballPlayerState = EBallPlayerState.Moving;
-        //}
+        //_ballRigidBody.velocity = _ballMovementVelocity;
+        if (_ballRigidBody.velocity.sqrMagnitude < _ballMaxSpeed * _ballMaxSpeed)
+            _ballRigidBody.AddForce(_ballMovementVelocity, ForceMode.Force);
     }
 
     private void AddJumpForce()
